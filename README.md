@@ -26,3 +26,9 @@ docker run -it -d -e c_sessionid="by4lxxxxxxxxxxxxx76z6" \
 ```shell
 docker run -it -d -e proxy_port 8080 -p 8080:8080 proxy
 ```
+
+For HTTP requests use:
+`http://localhost:8001/http/`
+
+For WS:
+`http://localhost:8001/ws/`
