@@ -13,7 +13,8 @@ async def proxy_post_csrf(request: Request, request_url: str, default_cookies: D
     cookies.update(default_cookies)
     headers = get_request_headers(request, get_origin_from_url(request_url))
     xcsrf = await get_form_xcsrf(request_url, cookies, headers)
-    headers['X-Csrftoken'] = xcsrf
+    if xcsrf:
+        headers['X-Csrftoken'] = xcsrf
 
     body = await request.body()
 
@@ -25,9 +26,10 @@ async def proxy_post_csrf(request: Request, request_url: str, default_cookies: D
     return set_cookie_to_response(resp, response)
 
 
-async def get_form_xcsrf(request_url, cookies, headers) -> str:
+async def get_form_xcsrf(request_url: str, cookies: Dict[str, str], headers: Dict[str, str]) -> str | None:
     headers.pop('content-length')
     async with httpx.AsyncClient() as client:
         resp = await client.get(get_origin_from_url(request_url), cookies=cookies, headers=headers)
     pattern = r'name=\'csrfmiddlewaretoken\'\svalue=\'([^\']+)\''
-    return re.search(pattern, resp.text).group(1)
+    match = re.search(pattern, resp.text)
+    return match.group(1) if match else None
