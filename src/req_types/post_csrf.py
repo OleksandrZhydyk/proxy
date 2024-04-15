@@ -8,11 +8,11 @@ from fastapi import Request, Response
 from utils import get_request_headers, get_origin_from_url, set_cookie_to_response
 
 
-async def proxy_post_csrf(request: Request, request_url: str, default_cookies: Dict[str, str]) -> Response:
+async def proxy_post_csrf(request: Request, request_url: str,) -> Response:
     cookies = request.cookies
-    cookies.update(default_cookies)
     headers = get_request_headers(request, get_origin_from_url(request_url))
-    xcsrf = await get_form_xcsrf(request_url, cookies, headers)
+    cookies, xcsrf = await get_form_xcsrf(request_url, cookies, headers)
+    cookies.update(cookies)
     if xcsrf:
         headers['X-Csrftoken'] = xcsrf
 
@@ -32,4 +32,4 @@ async def get_form_xcsrf(request_url: str, cookies: Dict[str, str], headers: Dic
         resp = await client.get(get_origin_from_url(request_url), cookies=cookies, headers=headers)
     pattern = r'name=\'csrfmiddlewaretoken\'\svalue=\'([^\']+)\''
     match = re.search(pattern, resp.text)
-    return match.group(1) if match else None
+    return resp.cookies, match.group(1) if match else None

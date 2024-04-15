@@ -48,5 +48,10 @@ async def websocket_proxy(websocket: WebSocket, request_url: str):
     await proxy_simple_ws(websocket, request_url)
 
 
+@app.post("/login/{request_url:path}")
+async def post(request: Request, request_url: str) -> Response:
+    return await proxy_post_csrf(request, request_url)
+
+
 if __name__ == '__main__':
     uvicorn.run("main:app", host="0.0.0.0", port=8001, reload=True)
