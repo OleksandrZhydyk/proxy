@@ -9,6 +9,7 @@ from starlette.requests import Request
 from req_types.get_req import get_req
 from req_types.post_csrf import proxy_post_csrf
 from req_types.simple_ws import proxy_simple_ws
+from req_types.login import proxy_login
 
 app = FastAPI(title="proxy")
 
@@ -40,7 +41,7 @@ async def get(request: Request, request_url: str) -> Response:
 
 @app.post("/http/{request_url:path}")
 async def post(request: Request, request_url: str) -> Response:
-    return await proxy_post_csrf(request, request_url, default_cookies)
+    return await proxy_post_csrf(request, request_url)
 
 
 @app.websocket("/ws/{request_url:path}")
@@ -50,7 +51,7 @@ async def websocket_proxy(websocket: WebSocket, request_url: str):
 
 @app.post("/login/{request_url:path}")
 async def post(request: Request, request_url: str) -> Response:
-    return await proxy_post_csrf(request, request_url)
+    return await proxy_login(request, request_url)
 
 
 if __name__ == '__main__':
