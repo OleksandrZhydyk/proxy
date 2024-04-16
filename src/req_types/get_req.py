@@ -5,8 +5,8 @@ from fastapi import Response, Request
 from utils import get_request_headers, set_cookie_to_response
 
 
-async def get_req(request: Request, request_url: str, default_cookies: Dict[str, str]) -> Response:
-    cookies = request.cookies
+async def get_req(request: Request, request_url: str) -> Response:
+    cookies = dict(request.query_params)
     headers = get_request_headers(request, request_url)
 
     async with httpx.AsyncClient() as client:

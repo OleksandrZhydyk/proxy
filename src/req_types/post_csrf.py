@@ -9,7 +9,7 @@ from utils import get_request_headers, get_origin_from_url, set_cookie_to_respon
 
 
 async def proxy_post_csrf(request: Request, request_url: str) -> Response:
-    cookies = request.cookies
+    cookies = dict(request.query_params)
     headers = get_request_headers(request, get_origin_from_url(request_url))
     resp_cookies, xcsrf = await get_form_xcsrf(request_url, cookies, headers)
     if xcsrf:
