@@ -36,7 +36,7 @@ default_cookies = get_default_cookie()
 
 @app.get("/http/{request_url:path}")
 async def get(request: Request, request_url: str) -> Response:
-    return await get_req(request, request_url, default_cookies)
+    return await get_req(request, request_url)
 
 
 @app.post("/http/{request_url:path}")

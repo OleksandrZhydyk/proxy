@@ -11,7 +11,6 @@ async def get_req(request: Request, request_url: str) -> Response:
 
     async with httpx.AsyncClient() as client:
         resp = await client.get(request_url, cookies=cookies, headers=headers)
-
     content_type = resp.headers.get("content-type")
     content = resp.content
     response = Response(content, media_type=content_type, headers=resp.headers, status_code=resp.status_code)
