@@ -1,4 +1,5 @@
-from typing import Dict
+import re
+from typing import Dict, Tuple, Any
 
 import httpx
 
@@ -28,3 +29,13 @@ def get_request_headers(request: Request, origin: str) -> Dict[str, str]:
     headers['origin'] = origin
     headers['referer'] = origin
     return headers
+
+
+async def get_form_xcsrf(request_url: str, cookies: Dict[str, str], headers: Dict[str, str]) -> Tuple[str, Dict[str, Any]] | None:
+    if headers.get("content-length"):
+        headers.pop('content-length')
+    async with httpx.AsyncClient() as client:
+        resp = await client.get(get_origin_from_url(request_url), cookies=cookies, headers=headers)
+    pattern = r'name=\'csrfmiddlewaretoken\'\svalue=\'([^\']+)\''
+    match = re.search(pattern, resp.text)
+    return match.group(1) if match else None, dict(resp.cookies.items())
